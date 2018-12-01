@@ -1,25 +1,26 @@
 <template>
   <el-table :data="list" style="width: 100%;padding-top: 15px;">
-    <el-table-column label="Order_No" min-width="200">
+    <el-table-column label="Host ID" min-width="100">
       <template slot-scope="scope">
-        {{scope.row.order_no |  orderNoFilter}}
+        {{scope.row.hostid}}
       </template>
     </el-table-column>
-    <el-table-column label="Price" width="195" align="center">
+    <el-table-column label="Host Name" min-width="100">
       <template slot-scope="scope">
-        ¥{{scope.row.price | toThousandslsFilter}}
+        {{scope.row.host}}
       </template>
     </el-table-column>
-    <el-table-column label="Status" width="100" align="center">
+    <el-table-column label="Host IP" min-width="100" align="center">
       <template slot-scope="scope">
-        <el-tag :type="scope.row.status | statusFilter"> {{scope.row.status}}</el-tag>
+        {{scope.row.interfaces[0].ip}}
       </template>
     </el-table-column>
   </el-table>
 </template>
 
 <script>
-import { fetchList } from '@/api/transaction'
+import { fetchList } from '@/api/hosts'
+import store from '@/store'
 
 export default {
   data() {
@@ -44,8 +45,9 @@ export default {
   },
   methods: {
     fetchData() {
-      fetchList().then(response => {
-        this.list = response.data.items.slice(0, 8)
+      fetchList(store.getters.token).then(response => {
+        console.log(response.data);
+        this.list = response.data.result
       })
     }
   }

@@ -176,7 +176,7 @@ export default {
         // CPU utilization: CPU idle time & CPU iowait time
         let cpuUtilizationList = []
         let cpuUtilizationItems = []
-        // console.log(graphList)
+        console.log(graphList)
         for (; i < graphList.length; i++) {
           if (graphList[i].name === 'CPU utilization') {
             j = 0
@@ -217,12 +217,13 @@ export default {
           i = 0
           j = 0
           let historyDataList = response.data.result
+          console.log(historyDataList)
           for (; i < cpuUtilizationList.length; i++) {
             j = 0
             for (; j < historyDataList.length; j++) {
               if (historyDataList[j].itemid === cpuUtilizationList[i].itemid) {
-                cpuUtilizationList[i].totalCount = Number(cpuUtilizationList[i].totalCount ? 0 : cpuUtilizationList[i].totalCount) + 1
-                cpuUtilizationList[i].total = Number(cpuUtilizationList[i].total ? 0 : Number(cpuUtilizationList[i].total)) + Number(historyDataList[j].value)
+                cpuUtilizationList[i].totalCount = Number(cpuUtilizationList[i].totalCount) + 1
+                cpuUtilizationList[i].total = Number(cpuUtilizationList[i].total) + Number(historyDataList[j].value)
                 if (cpuUtilizationList[i].min === undefined) {
                   cpuUtilizationList[i].min = historyDataList[j].value
                 } else {

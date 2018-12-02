@@ -57,15 +57,15 @@ export default {
   name: 'login',
   data () {
     const validateUsername = (rule, value, callback) => {
-      if (!isvalidUsername(value)) {
-        callback(new Error(this.$t('login.usernameInvalid')))
+      if (!value) {
+        callback(new Error(this.$t('login.usernameEmpty')))
       } else {
         callback()
       }
     }
     const validatePassword = (rule, value, callback) => {
-      if (value.length < 6) {
-        callback(new Error(this.$t('login.passwordInvalid')))
+      if (!value) {
+        callback(new Error(this.$t('login.passwordEmpty')))
       } else {
         callback()
       }

@@ -2,14 +2,8 @@ export default {
   route: {
     dashboard: '首页',
     guide: '引导页',
-    b2b: 'B2B管理',
-    cooperationNotes: '合作须知',
-    homePic: '登录页图片',
-    systemParam: 'B2B系统参数',
 
-    systemManage: '系统管理',
-    billConfig: '单据设置',
-    role: '岗位设置',
+    display: '数据展示',
 
     introduction: '简述',
     documentation: '文档',

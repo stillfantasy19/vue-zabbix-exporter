@@ -151,7 +151,7 @@ const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
 }, {})
 
 export default {
-  name: 'billConfig',
+  name: 'display',
   directives: {
     waves
   },
@@ -213,7 +213,7 @@ export default {
     }
   },
   created() {
-    this.getList()
+    // this.getList()
   },
   methods: {
     getList() {

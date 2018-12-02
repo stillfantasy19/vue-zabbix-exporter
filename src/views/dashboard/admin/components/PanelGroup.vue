@@ -60,26 +60,15 @@ export default {
       })
     },
     handleClick (index) {
-      console.log(this.list)
       let checked = this.list[index].checked
       if (!checked) {
         checked = false
       }
       checked = !checked
       this.list[index].checked = checked
-      console.log(this.list)
     },
     handleSetLineChartData (type) {
       this.$emit('handleSetLineChartData', type)
-    }
-  },
-  // 监听list数据变化
-  watch: {
-    list: {
-      deep: true, // 深度监听
-      handler: function (newVal, oldVal) {
-        console.log(newVal)
-      }
     }
   }
 }

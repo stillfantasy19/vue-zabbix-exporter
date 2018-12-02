@@ -2,14 +2,8 @@ export default {
   route: {
     dashboard: 'Dashboard',
     guide: 'Guide',
-    b2b: 'B2B Manage',
-    cooperationNotes: 'Cooperation Notes',
-    homePic: 'Login Images',
-    systemParam: 'System Paramters',
 
-    systemManage: 'System Manage',
-    billConfig: 'Bill Config',
-    role: 'Role Config',
+    display: 'Data Display',
 
     introduction: 'Introduction',
     documentation: 'Documentation',

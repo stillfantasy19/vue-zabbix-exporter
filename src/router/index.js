@@ -42,37 +42,17 @@ export default new Router({
 })
 
 export const asyncRouterMap = [
-  // {
-  //   path: '/b2b',
-  //   component: Layout,
-  //   redirect: '/b2b/list',
-  //   name: 'b2b',
-  //   meta: {
-  //     title: 'b2b',
-  //     icon: 'example'
-  //   },
-  //   children: [
-  //     { path: 'cooperNotice', component: () => import('@/views/b2b/cooperNotice'), name: 'cooperationNotes', meta: { title: 'cooperationNotes', icon: 'list' }},
-  //     { path: 'homePic', component: () => import('@/views/b2b/homePic'), name: 'homePic', meta: { title: 'homePic', icon: 'list' }},
-  //     { path: 'edit/:id(\\d+)', component: () => import('@/views/b2b/edit'), name: 'editArticle', meta: { title: 'editArticle', noCache: true }, hidden: true }
-  //     // { path: 'list', component: () => import('@/views/b2b/list'), name: 'systemParam', meta: { title: 'systemParam', icon: 'list' }}
-  //   ]
-  // },
-  // {
-  //   path: '/systemManage',
-  //   component: Layout,
-  //   redirect: '/systemManage/role',
-  //   name: 'systemManage',
-  //   meta: {
-  //     title: 'systemManage',
-  //     icon: 'table'
-  //   },
-  //   children: [
-  //     { path: 'role', component: () => import('@/views/systemManage/role'), name: 'role', meta: { title: 'role' }},
-  //     { path: 'billConfig', component: () => import('@/views/systemManage/billConfig'), name: 'billConfig', meta: { title: 'billConfig' }}
-  //
-  //   ]
-  // },
+  {
+    path: '/display',
+    component: Layout,
+    redirect: '/display/index',
+    children: [{
+      path: 'index',
+      component: () => import('@/views/display/index'),
+      name: 'display',
+      meta: { title: 'display', icon: 'example', noCache: true }
+    }]
+  },
 
   { path: '*', redirect: '/404', hidden: true }
 ]

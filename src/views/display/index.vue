@@ -6,7 +6,7 @@
         </el-option>
       </el-select>
       <el-select clearable class="filter-item" style="width: 300px" v-model="listQuery.hostids" multiple placeholder="服务器">
-        <el-option v-for="item in  hostsOptions" :key="item.hostid" :label="item.host" :value="item.hostid">
+        <el-option v-for="item in  hostsOptions" :key="item.hostid" :label="item.interfaces[0].ip" :value="item.hostid">
         </el-option>
       </el-select>
       <el-date-picker

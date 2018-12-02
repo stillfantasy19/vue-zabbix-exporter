@@ -3,6 +3,10 @@
     <panel-group @handleSetLineChartData="handleSetLineChartData"></panel-group>
 
     <el-row style="background:#fff;padding:16px 16px 0;margin-bottom:32px;">
+      <graph-group></graph-group>
+    </el-row>
+
+    <el-row style="background:#fff;padding:16px 16px 0;margin-bottom:32px;">
       <line-chart :chart-data="lineChartData"></line-chart>
     </el-row>
 
@@ -17,6 +21,8 @@
 
 <script>
 import PanelGroup from './components/PanelGroup'
+import GraphGroup from './components/GraphGroup'
+
 import LineChart from './components/LineChart'
 import RaddarChart from './components/RaddarChart'
 import PieChart from './components/PieChart'
@@ -48,6 +54,7 @@ export default {
   name: 'dashboard-admin',
   components: {
     PanelGroup,
+    GraphGroup,
     LineChart,
     RaddarChart,
     PieChart,

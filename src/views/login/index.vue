@@ -182,7 +182,7 @@ export default {
   mounted () {
     if (this.$store.getters.defaultUsername) {
       this.loginForm.username = this.$store.getters.defaultUsername
-      this.$refs.loginForm.$el[2].focus()
+      this.$refs.loginForm.$el[1].focus()
       return
     }
     this.$refs.loginForm.$el[0].focus()

@@ -1,46 +1,13 @@
 <template>
   <el-row class="panel-group" :gutter="40">
-    <el-col :xs="12" :sm="12" :lg="6" class="card-panel-col">
-      <div class='card-panel' @click="handleSetLineChartData('newVisitis')">
-        <div class="card-panel-icon-wrapper icon-people">
-          <svg-icon icon-class="peoples" class-name="card-panel-icon" />
+    <el-col :xs="12" :sm="12" :lg="6" class="card-panel-col" v-for="(server, index) in list" :key="server.hostid">
+      <div :class="cardPanelClass(index)" @click="handleClick(index)">
+        <div :class="iconContainerClass(index)">
+          <svg-icon icon-class="server" class-name="card-panel-icon" />
         </div>
         <div class="card-panel-description">
-          <div class="card-panel-text">New Visits</div>
-          <count-to class="card-panel-num" :startVal="0" :endVal="102400" :duration="2600"></count-to>
-        </div>
-      </div>
-    </el-col>
-    <el-col :xs="12" :sm="12" :lg="6" class="card-panel-col">
-      <div class="card-panel" @click="handleSetLineChartData('messages')">
-        <div class="card-panel-icon-wrapper icon-message">
-          <svg-icon icon-class="message" class-name="card-panel-icon" />
-        </div>
-        <div class="card-panel-description">
-          <div class="card-panel-text">Messages</div>
-          <count-to class="card-panel-num" :startVal="0" :endVal="81212" :duration="3000"></count-to>
-        </div>
-      </div>
-    </el-col>
-    <el-col :xs="12" :sm="12" :lg="6" class="card-panel-col">
-      <div class="card-panel" @click="handleSetLineChartData('purchases')">
-        <div class="card-panel-icon-wrapper icon-money">
-          <svg-icon icon-class="money" class-name="card-panel-icon" />
-        </div>
-        <div class="card-panel-description">
-          <div class="card-panel-text">Purchases</div>
-          <count-to class="card-panel-num" :startVal="0" :endVal="9280" :duration="3200"></count-to>
-        </div>
-      </div>
-    </el-col>
-    <el-col :xs="12" :sm="12" :lg="6" class="card-panel-col">
-      <div class="card-panel" @click="handleSetLineChartData('shoppings')">
-        <div class="card-panel-icon-wrapper icon-shoppingCard">
-          <svg-icon icon-class="shoppingCard" class-name="card-panel-icon" />
-        </div>
-        <div class="card-panel-description">
-          <div class="card-panel-text">Shoppings</div>
-          <count-to class="card-panel-num" :startVal="0" :endVal="13600" :duration="3600"></count-to>
+          <div class="card-panel-text">{{server.host}}</div>
+          <div class="card-panel-num">{{server.interfaces[0].ip}}</div>
         </div>
       </div>
     </el-col>
@@ -49,14 +16,70 @@
 
 <script>
 import CountTo from 'vue-count-to'
+import { fetchList } from '@/api/hosts'
+import store from '@/store'
 
 export default {
   components: {
     CountTo
   },
+  data() {
+    return {
+      list: null
+    }
+  },
+  created() {
+    this.fetchData()
+  },
+  computed: {
+    cardPanelClass () {
+      return function (index) {
+        if (index === undefined) {
+          index = 0
+        }
+        const checked = this.list[index].checked
+        console.log('card-panel' + (checked ? ' checked' : ''))
+        return 'card-panel' + (checked ? ' checked' : '')
+      }
+    },
+    iconContainerClass () {
+      return function (index) {
+        if (index === undefined) {
+          index = 0
+        }
+        index = index % 4
+        return 'card-panel-icon-wrapper icon-server' + (index + 1)
+      }
+    }
+  },
   methods: {
-    handleSetLineChartData(type) {
+    fetchData () {
+      fetchList(store.getters.token).then(response => {
+        console.log(response.data)
+        this.list = response.data.result
+      })
+    },
+    handleClick (index) {
+      console.log(this.list)
+      let checked = this.list[index].checked
+      if (!checked) {
+        checked = false
+      }
+      checked = !checked
+      this.list[index].checked = checked
+      console.log(this.list)
+    },
+    handleSetLineChartData (type) {
       this.$emit('handleSetLineChartData', type)
+    }
+  },
+  // 监听list数据变化
+  watch: {
+    list: {
+      deep: true, // 深度监听
+      handler: function (newVal, oldVal) {
+        console.log(newVal)
+      }
     }
   }
 }
@@ -78,33 +101,33 @@ export default {
     background: #fff;
     box-shadow: 4px 4px 40px rgba(0, 0, 0, .05);
     border-color: rgba(0, 0, 0, .05);
-    &:hover {
+    .checked {
       .card-panel-icon-wrapper {
         color: #fff;
       }
-      .icon-people {
+      .icon-server1 {
          background: #40c9c6;
       }
-      .icon-message {
+      .icon-server2 {
         background: #36a3f7;
       }
-      .icon-money {
+      .icon-server3 {
         background: #f4516c;
       }
-      .icon-shoppingCard {
+      .icon-server4 {
         background: #34bfa3
       }
     }
-    .icon-people {
+    .icon-server1 {
       color: #40c9c6;
     }
-    .icon-message {
+    .icon-server2 {
       color: #36a3f7;
     }
-    .icon-money {
+    .icon-server3 {
       color: #f4516c;
     }
-    .icon-shoppingCard {
+    .icon-server4 {
       color: #34bfa3
     }
     .card-panel-icon-wrapper {

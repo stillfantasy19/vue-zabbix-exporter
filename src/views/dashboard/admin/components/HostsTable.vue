@@ -29,16 +29,6 @@ export default {
     }
   },
   filters: {
-    statusFilter(status) {
-      const statusMap = {
-        success: 'success',
-        pending: 'danger'
-      }
-      return statusMap[status]
-    },
-    orderNoFilter(str) {
-      return str.substring(0, 30)
-    }
   },
   created() {
     this.fetchData()

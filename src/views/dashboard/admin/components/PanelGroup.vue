@@ -1,6 +1,6 @@
 <template>
   <el-row class="panel-group" :gutter="40">
-    <el-col :xs="12" :sm="12" :lg="6" class="card-panel-col" v-for="(server, index) in list" :key="server.hostid">
+    <el-col :xs="12" :sm="12" :lg="12" class="card-panel-col" v-for="(server, index) in list" :key="server.hostid">
       <div :class="cardPanelClass(index)" @click="handleClick(index)">
         <div :class="iconContainerClass(index)">
           <svg-icon icon-class="server" class-name="card-panel-icon" />

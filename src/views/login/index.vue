@@ -42,15 +42,12 @@
 
     </el-form>
 
-    <!--<Copyright></Copyright>-->
   </div>
 </template>
 
 <script>
-// import { isvalidUsername } from '@/utils/validate'
 import LangSelect from '@/components/LangSelect'
 import SIdentify from '@/components/SIdentify'
-// import Copyright from '@/components/Copyright'
 
 export default {
   components: { LangSelect, SIdentify },

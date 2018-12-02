@@ -22,9 +22,6 @@ export function fetchHostList (token, groupId) {
     'jsonrpc': '2.0',
     'method': 'host.get',
     'params': {
-      'groupids': [
-        groupId
-      ],
       'output': [
         'hostid',
         'host'
@@ -36,6 +33,9 @@ export function fetchHostList (token, groupId) {
     },
     'auth': token,
     'id': 5
+  }
+  if (groupId) {
+    data.params.groupids = [groupId]
   }
   return request({
     url: process.env.BASE_API,

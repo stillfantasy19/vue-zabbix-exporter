@@ -1,6 +1,8 @@
 import request from '@/utils/request'
 
 export function fetchHistoryDataList (token, itemIds, timeFrom, timeTill) {
+  console.log('timeFrom:' + timeFrom)
+  console.log('timeTill:' + timeTill)
   const data = {
     "jsonrpc": "2.0",
     "method": "history.get",
@@ -10,15 +12,15 @@ export function fetchHistoryDataList (token, itemIds, timeFrom, timeTill) {
       "itemids": itemIds,
       "sortfield": "itemid",
       "sortorder": "DESC",
-      "time_from":1543640400,
-      "time_till":1543647600,
+      "time_from":timeFrom,
+      "time_till":timeTill,
       "limit": 100000
     },
     "auth": token,
     "id": 6
   }
   return request({
-    url: 'http://172.16.199.24/zabbix/api_jsonrpc.php',
+    url: process.env.BASE_API,
     method: 'post',
     data
   })

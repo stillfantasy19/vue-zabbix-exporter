@@ -5,7 +5,7 @@
         <el-option v-for="item in hostGroupOptions" :key="item.groupid" :label="item.name" :value="item.groupid">
         </el-option>
       </el-select>
-      <el-select clearable class="filter-item" style="width: 300px" v-model="listQuery.hostids" multiple placeholder="服务器">
+      <el-select clearable class="filter-item" style="width: 450px" v-model="listQuery.hostids" multiple placeholder="服务器">
         <el-option v-for="item in  hostsOptions" :key="item.hostid" :label="item.interfaces[0].ip" :value="item.hostid">
         </el-option>
       </el-select>
@@ -32,15 +32,15 @@
     </div>
 
     <el-table :key='tableKey' :data="list" v-loading="listLoading" border fit highlight-current-row
-      style="width: 100%;min-height:1000px;">
+      style="width: 100%;min-height:200px;">
       <el-table-column min-width="100px" label="Host Name">
         <template slot-scope="scope">
           <span>{{scope.row.hostName}}({{scope.row.hostIp}})</span>
         </template>
       </el-table-column>
-      <el-table-column min-width="150px" label="Items">
+      <el-table-column min-width="100px" label="Items">
         <template slot-scope="scope">
-          <span>{{scope.row.name}}({{scope.row.description}})</span>
+          <span>{{scope.row.name}}</span>
         </template>
       </el-table-column>
       <el-table-column width="110px" align="center" label="Min">
@@ -58,11 +58,34 @@
           <span>{{scope.row.max}}</span>
         </template>
       </el-table-column>
-      <!--<el-table-column width="110px" align="center" label="CPU使用率">-->
-        <!--<template slot-scope="scope">-->
-          <!--<span>{{100 - scope.row.avg}}</span>-->
-        <!--</template>-->
-      <!--</el-table-column>-->
+    </el-table>
+    <el-table :key='tableKey' :data="listSummary" v-loading="listLoading" border fit highlight-current-row
+              style="margin-top:20px;width: 100%;min-height:200px;">
+      <el-table-column min-width="100px" label="Host Name">
+        <template slot-scope="scope">
+          <span>{{scope.row.hostName}}({{scope.row.hostIp}})</span>
+        </template>
+      </el-table-column>
+      <el-table-column width="110px" align="center" label="CPU使用率">
+        <template slot-scope="scope">
+        <span>{{scope.row.cpuUseRate}}%</span>
+        </template>
+      </el-table-column>
+      <el-table-column width="110px" align="center" label="内存使用率">
+        <template slot-scope="scope">
+          <span>{{scope.row.memoryUseRate}}%</span>
+        </template>
+      </el-table-column>
+      <el-table-column width="110px" align="center" label="磁盘iowait">
+        <template slot-scope="scope">
+          <span>{{scope.row.ioWaitRate}}%</span>
+        </template>
+      </el-table-column>
+      <el-table-column width="110px" align="center" label="网络吞吐量">
+        <template slot-scope="scope">
+          <span>{{scope.row.netPv}}</span>
+        </template>
+      </el-table-column>
     </el-table>
   </div>
 </template>
@@ -84,11 +107,9 @@ export default {
     return {
       tableKey: 0,
       list: null,
-      total: null,
+      listSummary: null,
       listLoading: false,
       listQuery: {
-        page: 1,
-        limit: 20,
         hostgroupid: undefined,
         hostids: [],
         title: undefined,
@@ -98,27 +119,6 @@ export default {
       },
       hostGroupOptions: [],
       hostsOptions: [],
-      statusOptions: ['published', 'draft', 'deleted'],
-      temp: {
-        id: undefined,
-        hostgroupid: undefined,
-        remark: '',
-        timestamp: new Date(),
-        title: '',
-        type: '',
-        status: 'published'
-      },
-      dialogFormVisible: false,
-      dialogStatus: '',
-      textMap: {
-        update: 'Edit',
-        create: 'Create'
-      },
-      rules: {
-        type: [{ required: true, message: 'type is required', trigger: 'change' }],
-        timestamp: [{ type: 'date', required: true, message: 'timestamp is required', trigger: 'change' }],
-        title: [{ required: true, message: 'title is required', trigger: 'blur' }]
-      },
       downloadLoading: false,
       pickerOptions: {
         shortcuts: [{
@@ -145,14 +145,6 @@ export default {
     }
   },
   filters: {
-    statusFilter (status) {
-      const statusMap = {
-        published: 'success',
-        draft: 'info',
-        deleted: 'danger'
-      }
-      return statusMap[status]
-    }
   },
   created() {
     this.getHostGroupList()
@@ -184,7 +176,7 @@ export default {
         // CPU utilization: CPU idle time & CPU iowait time
         let cpuUtilizationList = []
         let cpuUtilizationItems = []
-        console.log(graphList)
+        // console.log(graphList)
         for (; i < graphList.length; i++) {
           if (graphList[i].name === 'CPU utilization') {
             j = 0
@@ -193,6 +185,12 @@ export default {
                 graphList[i].items[j].description === 'The time the CPU has spent doing nothing.' ||
                 graphList[i].items[j].name === 'CPU iowait time' ||
                 graphList[i].items[j].description === 'Amount of time the CPU has been waiting for I/O to complete.') {
+                if (graphList[i].items[j].description === 'The time the CPU has spent doing nothing.') {
+                  graphList[i].items[j].name = 'CPU idle time'
+                }
+                if (graphList[i].items[j].description === 'Amount of time the CPU has been waiting for I/O to complete.') {
+                  graphList[i].items[j].name = 'CPU iowait time'
+                }
                 graphList[i].items[j].total = 0
                 graphList[i].items[j].totalCount = 0
                 cpuUtilizationList.push(graphList[i].items[j])
@@ -213,8 +211,7 @@ export default {
           this.listLoading = false
           return
         }
-        console.log(cpuUtilizationList)
-        fetchHistoryDataList(store.getters.token, cpuUtilizationItems).then(response => {
+        fetchHistoryDataList(store.getters.token, cpuUtilizationItems, new Date(this.listQuery.startTime).getTime() / 1000, new Date(this.listQuery.endTime).getTime() / 1000).then(response => {
           i = 0
           j = 0
           let historyDataList = response.data.result
@@ -236,38 +233,63 @@ export default {
                 }
               }
             }
-            // cpuUtilizationList[i].totalCount = 10
-            // cpuUtilizationList[i].total = 100
             cpuUtilizationList[i].avg = Number(Number(cpuUtilizationList[i].total) / Number(cpuUtilizationList[i].totalCount)).toFixed(2)
             cpuUtilizationList[i].max = Number(cpuUtilizationList[i].max).toFixed(2)
             cpuUtilizationList[i].min = Number(cpuUtilizationList[i].min).toFixed(2)
           }
-          console.log(cpuUtilizationList)
-          this.listLoading = false
+
           this.list = cpuUtilizationList
+          i = 0
+          let listSummary = []
+          k = 0
+          let m = 0
+          for (; k < this.hostsOptions.length; k++) {
+            for (; m < this.listQuery.hostids.length; m++) {
+              if (this.listQuery.hostids[m] === this.hostsOptions[k].hostid) {
+                listSummary.push({hostName: this.hostsOptions[k].host, hostIp: this.hostsOptions[k].interfaces[0].ip})
+              }
+            }
+          }
+          for (; i < cpuUtilizationList.length; i++) {
+            j = 0
+            for (; j < listSummary.length; j++) {
+              if (cpuUtilizationList[i].name === 'CPU idle time' && cpuUtilizationList[i].hostIp === listSummary[j].hostIp) {
+                listSummary[j].cpuUseRate = Number(100 - Number(cpuUtilizationList[i].avg)).toFixed(2)
+              }
+              if (cpuUtilizationList[i].name === 'CPU iowait time' && cpuUtilizationList[i].hostIp === listSummary[j].hostIp) {
+                listSummary[j].ioWaitRate = Number(cpuUtilizationList[i].avg)
+              }
+            }
+          }
+          this.listSummary = listSummary
+          this.listLoading = false
         })
       })
     },
-    handleFilter() {
+    handleFilter () {
       this.getList()
     },
-    handleModifyStatus(row, status) {
-      this.$message({
-        message: '操作成功',
-        type: 'success'
+    handleDownload () {
+      this.downloadLoading = true
+      import('@/vendor/Export2Excel').then(excel => {
+        const tHeader = ['主机名', 'CPU使用率', '内存使用率', '磁盘iowait', '网络吞吐量']
+        const filterVal = ['hostIp', 'cpuUseRate', 'memoryUseRate', 'ioWaitRate', 'netPv']
+        const data = this.formatJson(filterVal, this.listSummary)
+        excel.export_json_to_excel({
+          header: tHeader,
+          data,
+          filename: 'result'
+        })
+        this.downloadLoading = false
       })
-      row.status = status
     },
-    resetTemp() {
-      this.temp = {
-        id: undefined,
-        importance: 1,
-        remark: '',
-        timestamp: new Date(),
-        title: '',
-        status: 'published',
-        type: ''
-      }
+    formatJson (filterVal, jsonData) {
+      return jsonData.map(v => filterVal.map(j => {
+        if (j.endsWith('Rate') && v[j]) {
+          return v[j] + '%'
+        }
+        return v[j]
+      }))
     }
   }
 }

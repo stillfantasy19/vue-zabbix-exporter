@@ -12,7 +12,7 @@ export function loginByUsername(username, password) {
     }
   }
   return request({
-    url: 'http://172.16.199.24/zabbix/api_jsonrpc.php',
+    url: process.env.BASE_API,
     method: 'post',
     data
   })
@@ -28,7 +28,7 @@ export function logout(token) {
     "id": 3
   }
   return request({
-    url: 'http://172.16.199.24/zabbix/api_jsonrpc.php',
+    url: process.env.BASE_API,
     method: 'post',
     data
   })
@@ -46,7 +46,7 @@ export function getUserInfo(token) {
     "id": 2
   }
   return request({
-    url: 'http://172.16.199.24/zabbix/api_jsonrpc.php',
+    url: process.env.BASE_API,
     method: 'post',
     data
   })

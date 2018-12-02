@@ -19,7 +19,7 @@ export function fetchGraphList (token, hostIds) {
     'id': 6
   }
   return request({
-    url: 'http://172.16.199.24/zabbix/api_jsonrpc.php',
+    url: process.env.BASE_API,
     method: 'post',
     data
   })

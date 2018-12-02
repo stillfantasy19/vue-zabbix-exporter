@@ -5,19 +5,13 @@ export function fetchHostGroupList (token) {
     'jsonrpc': '2.0',
     'method': 'hostgroup.get',
     'params': {
-      'output': 'extend',
-      'filter': {
-        'name': [
-          'Zabbix servers',
-          'Linux servers'
-        ]
-      }
+      'output': 'extend'
     },
     'auth': token,
     'id': 4
   }
   return request({
-    url: 'http://172.16.199.24/zabbix/api_jsonrpc.php',
+    url: process.env.BASE_API,
     method: 'post',
     data
   })

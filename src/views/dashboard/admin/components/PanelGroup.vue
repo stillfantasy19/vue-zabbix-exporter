@@ -16,7 +16,7 @@
 
 <script>
 import CountTo from 'vue-count-to'
-import { fetchList } from '@/api/hosts'
+import { fetchHostList } from '@/api/hosts'
 import store from '@/store'
 
 export default {
@@ -54,8 +54,8 @@ export default {
   },
   methods: {
     fetchData () {
-      fetchList(store.getters.token).then(response => {
-        console.log(response.data)
+      fetchHostList(store.getters.token).then(response => {
+        // console.log(response.data)
         this.list = response.data.result
       })
     },

@@ -1,10 +1,6 @@
 import request from '@/utils/request'
 
 export function loginByUsername(username, password) {
-  // const data = {
-  //   username,
-  //   password
-  // }
   const data = {
     "id": 1,
     "jsonrpc": "2.0",

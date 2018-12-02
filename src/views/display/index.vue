@@ -45,17 +45,17 @@
       </el-table-column>
       <el-table-column width="110px" align="center" label="Min">
         <template slot-scope="scope">
-          <span>{{scope.row.min}}</span>
+          <span>{{scope.row.min}}%</span>
         </template>
       </el-table-column>
       <el-table-column width="110px" align="center" label="Avg">
         <template slot-scope="scope">
-          <span>{{scope.row.avg}}</span>
+          <span>{{scope.row.avg}}%</span>
         </template>
       </el-table-column>
       <el-table-column width="110px" align="center" label="Max">
         <template slot-scope="scope">
-          <span>{{scope.row.max}}</span>
+          <span>{{scope.row.max}}%</span>
         </template>
       </el-table-column>
     </el-table>

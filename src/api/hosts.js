@@ -19,10 +19,12 @@ export function fetchHostGroupList (token) {
 
 export function fetchHostList (token, groupId) {
   const data = {
-    'groupids': groupId,
     'jsonrpc': '2.0',
     'method': 'host.get',
     'params': {
+      'groupids': [
+        groupId
+      ],
       'output': [
         'hostid',
         'host'
@@ -36,7 +38,7 @@ export function fetchHostList (token, groupId) {
     'id': 5
   }
   return request({
-    url: 'http://172.16.199.24/zabbix/api_jsonrpc.php',
+    url: process.env.BASE_API,
     method: 'post',
     data
   })

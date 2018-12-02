@@ -187,9 +187,11 @@ export default {
                 graphList[i].items[j].description === 'Amount of time the CPU has been waiting for I/O to complete.') {
                 if (graphList[i].items[j].description === 'The time the CPU has spent doing nothing.') {
                   graphList[i].items[j].name = 'CPU idle time'
+                  graphList[i].items[j].digits = 2
                 }
                 if (graphList[i].items[j].description === 'Amount of time the CPU has been waiting for I/O to complete.') {
                   graphList[i].items[j].name = 'CPU iowait time'
+                  graphList[i].items[j].digits = 6
                 }
                 graphList[i].items[j].total = 0
                 graphList[i].items[j].totalCount = 0
@@ -233,9 +235,9 @@ export default {
                 }
               }
             }
-            cpuUtilizationList[i].avg = Number(Number(cpuUtilizationList[i].total) / Number(cpuUtilizationList[i].totalCount)).toFixed(2)
-            cpuUtilizationList[i].max = Number(cpuUtilizationList[i].max).toFixed(2)
-            cpuUtilizationList[i].min = Number(cpuUtilizationList[i].min).toFixed(2)
+            cpuUtilizationList[i].avg = Number(Number(cpuUtilizationList[i].total) / Number(cpuUtilizationList[i].totalCount)).toFixed(cpuUtilizationList[i].digits)
+            cpuUtilizationList[i].max = Number(cpuUtilizationList[i].max).toFixed(cpuUtilizationList[i].digits)
+            cpuUtilizationList[i].min = Number(cpuUtilizationList[i].min).toFixed(cpuUtilizationList[i].digits)
           }
 
           this.list = cpuUtilizationList
@@ -244,6 +246,7 @@ export default {
           k = 0
           let m = 0
           for (; k < this.hostsOptions.length; k++) {
+            m = 0
             for (; m < this.listQuery.hostids.length; m++) {
               if (this.listQuery.hostids[m] === this.hostsOptions[k].hostid) {
                 listSummary.push({hostName: this.hostsOptions[k].host, hostIp: this.hostsOptions[k].interfaces[0].ip})

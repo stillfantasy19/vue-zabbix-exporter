@@ -240,8 +240,8 @@ export default {
             }
           }
         }
-        console.log(cpuUtilizationList)
-        console.log(networkTraficList)
+        // console.log(cpuUtilizationList)
+        // console.log(networkTraficList)
         if (cpuUtilizationItems.length <= 0) {
           this.listLoading = false
           return
@@ -374,8 +374,8 @@ export default {
     handleDownload () {
       this.downloadLoading = true
       import('@/vendor/Export2Excel').then(excel => {
-        const tHeader = ['主机名', 'CPU使用率', '内存使用率', '磁盘iowait', '网络吞吐量']
-        const filterVal = ['hostIp', 'cpuUseRate', 'memoryUseRate', 'ioWaitRate', 'netPv']
+        const tHeader = ['主机名', 'CPU使用率', '内存使用率', '磁盘iowait', '网络吞吐量', '网络吞吐量Incomming', '网络吞吐量Outgoing']
+        const filterVal = ['hostIp', 'cpuUseRate', 'memoryUseRate', 'ioWaitRate', 'traffic', 'incomingTrafficAvg', 'outgoingTrafficAvg']
         const data = this.formatJson(filterVal, this.listSummary)
         excel.export_json_to_excel({
           header: tHeader,
@@ -388,7 +388,16 @@ export default {
     formatJson (filterVal, jsonData) {
       return jsonData.map(v => filterVal.map(j => {
         if (j.endsWith('Rate') && v[j]) {
-          return v[j] + '%'
+          return v[j] + v.unit
+        }
+        if (j.endsWith('TrafficAvg') && v[j]) {
+          return v[j] + v.trafficUnit
+        }
+        if (j === 'traffic') {
+          return (v.incomingTrafficAvg + v.outgoingTrafficAvg) + v.trafficUnit
+        }
+        if (!v[j]) {
+          return ''
         }
         return v[j]
       }))

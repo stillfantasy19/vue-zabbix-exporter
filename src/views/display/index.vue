@@ -425,7 +425,7 @@ export default {
               }
               if (listSummary[m].incomingTrafficShowAvg && listSummary[m].outgoingTrafficShowAvg) {
                 if (listSummary[m].incomingTrafficShowAvg.endsWith('Kbps') || listSummary[m].outgoingTrafficShowAvg.endsWith('Kbps')) {
-                  listSummary[m].traffic = Number(Number(listSummary[m].incomingTrafficAvg/1000).toFixed(2)) + Number(Number(listSummary[m].outgoingTrafficAvg/1000).toFixed(2))
+                  listSummary[m].traffic = Number(Number(Number(listSummary[m].incomingTrafficAvg/1000).toFixed(2)) + Number(Number(listSummary[m].outgoingTrafficAvg/1000).toFixed(2))).toFixed(2)
                   listSummary[m].trafficUnit = 'Kbps'
                   if (Number(listSummary[m].traffic) / 1000 > 1) {
                     listSummary[m].traffic = Number(Number(listSummary[m].traffic) / 1000).toFixed(2)

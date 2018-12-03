@@ -73,7 +73,7 @@
       </el-table-column>
       <el-table-column width="110px" align="center" label="内存使用率">
         <template slot-scope="scope">
-          <span></span>
+          <span>{{scope.row.memoryUseRate}}{{scope.row.memoryUseRateUnit}}</span>
         </template>
       </el-table-column>
       <el-table-column width="110px" align="center" label="磁盘iowait">
@@ -214,7 +214,7 @@ export default {
           }
 
           if (graphList[i].name === 'Network traffic on eth1' ||
-              graphList[i].name === 'Network traffic on eth0') {
+              graphList[i].name === 'Network traffic on eth0' || graphList[i].name === 'Memory usage') {
             j = 0
             for (; j < graphList[i].items.length; j++) {
               graphList[i].items[j].total = 0
@@ -223,9 +223,28 @@ export default {
               if (graphList[i].items[j].name === 'Incoming network traffic on eth1' ||
                 graphList[i].items[j].name === 'Outgoing network traffic on eth1' ||
                 graphList[i].items[j].name === 'Incoming network traffic on eth0' ||
-                graphList[i].items[j].name === 'Outgoing network traffic on eth0') {
+                graphList[i].items[j].name === 'Outgoing network traffic on eth0' ||
+                graphList[i].items[j].name === 'Incoming network traffic on $1' ||
+                graphList[i].items[j].name === 'Outgoing network traffic on $1' ||
+                graphList[i].items[j].name === 'Incoming network traffic on $0' ||
+                graphList[i].items[j].name === 'Outgoing network traffic on $0') {
                 graphList[i].items[j].digits = 2 // 取两位小数
 
+                networkTraficList.push(graphList[i].items[j])
+                networkTraficItems.push(graphList[i].items[j].itemid)
+                k = 0
+                for (; k < this.hostsOptions.length; k++) {
+                  if (this.hostsOptions[k].hostid === graphList[i].items[j].hostid) {
+                    graphList[i].items[j].hostName = this.hostsOptions[k].host
+                    graphList[i].items[j].hostIp = this.hostsOptions[k].interfaces[0].ip
+                    break
+                  }
+                }
+              }
+              // Memory信息
+              if (graphList[i].items[j].name === 'Available memory' ||
+                graphList[i].items[j].name === 'Total memory') {
+                graphList[i].items[j].digits = 2
                 networkTraficList.push(graphList[i].items[j])
                 networkTraficItems.push(graphList[i].items[j].itemid)
                 k = 0
@@ -240,8 +259,8 @@ export default {
             }
           }
         }
-        // console.log(cpuUtilizationList)
-        // console.log(networkTraficList)
+        console.log(cpuUtilizationList)
+        console.log(networkTraficList)
         if (cpuUtilizationItems.length <= 0) {
           this.listLoading = false
           return
@@ -330,10 +349,20 @@ export default {
               networkTraficList[i].max = Number(networkTraficList[i].max).toFixed(networkTraficList[i].digits)
               networkTraficList[i].min = Number(networkTraficList[i].min).toFixed(networkTraficList[i].digits)
               networkTraficList[i].unit = 'bps' // 设置数据单位
+              if (networkTraficList[i].name === 'Available memory' ||
+                networkTraficList[i].name === 'Total memory') {
+                networkTraficList[i].unit = 'B' // 设置数据单位
+              }
             }
             m = 0
             for (; m < networkTraficList.length; m++) {
-              if (Number(networkTraficList[m].max) / 1000000 > 1) {
+              if (networkTraficList[m].name === 'Available memory' ||
+                networkTraficList[m].name === 'Total memory') {
+                networkTraficList[m].unit = 'GB'
+                networkTraficList[m].max = Number(Number(networkTraficList[m].max) / (1024*1024*1024)).toFixed(networkTraficList[m].digits)
+                networkTraficList[m].min = Number(Number(networkTraficList[m].min) / (1024*1024*1024)).toFixed(networkTraficList[m].digits)
+                networkTraficList[m].avg = Number(Number(networkTraficList[m].avg) / (1024*1024*1024)).toFixed(networkTraficList[m].digits)
+              } else if (Number(networkTraficList[m].max) / 1000000 > 1) {
                 networkTraficList[m].unit = 'Mbps' // 设置数据单位
                 networkTraficList[m].max = Number(Number(networkTraficList[m].max) / 1000000).toFixed(networkTraficList[m].digits)
                 networkTraficList[m].min = Number(Number(networkTraficList[m].min) / 1000000).toFixed(networkTraficList[m].digits)
@@ -352,14 +381,34 @@ export default {
               j = 0
               for (; j < listSummary.length; j++) {
                 if ((networkTraficList[i].name === 'Incoming network traffic on eth1' ||
-                  networkTraficList[i].name === 'Incoming network traffic on eth0') && networkTraficList[i].hostIp === listSummary[j].hostIp){
+                  networkTraficList[i].name === 'Incoming network traffic on eth0' ||
+                  networkTraficList[i].name === 'Incoming network traffic on $1' ||
+                  networkTraficList[i].name === 'Incoming network traffic on $0') && networkTraficList[i].hostIp === listSummary[j].hostIp){
                   listSummary[j].incomingTrafficAvg = Number(networkTraficList[i].avg)
+                  listSummary[j].trafficUnit = networkTraficList[i].unit
                 }
                 if ((networkTraficList[i].name === 'Outgoing network traffic on eth1' ||
-                  networkTraficList[i].name === 'Outgoing network traffic on eth0') && networkTraficList[i].hostIp === listSummary[j].hostIp){
+                  networkTraficList[i].name === 'Outgoing network traffic on eth0' ||
+                  networkTraficList[i].name === 'Outgoing network traffic on $1' ||
+                  networkTraficList[i].name === 'Outgoing network traffic on $0') && networkTraficList[i].hostIp === listSummary[j].hostIp){
                   listSummary[j].outgoingTrafficAvg = Number(networkTraficList[i].avg)
+                  listSummary[j].trafficUnit = networkTraficList[i].unit
                 }
-                listSummary[j].trafficUnit = networkTraficList[i].unit
+                if ((networkTraficList[i].name === 'Available memory') && networkTraficList[i].hostIp === listSummary[j].hostIp){
+                  listSummary[j].availableMemory = Number(networkTraficList[i].avg)
+                  listSummary[j].memoryUnit = networkTraficList[i].unit
+                }
+                if ((networkTraficList[i].name === 'Total memory') && networkTraficList[i].hostIp === listSummary[j].hostIp){
+                  listSummary[j].totalMemory = Number(networkTraficList[i].avg)
+                  listSummary[j].memoryUnit = networkTraficList[i].unit
+                }
+              }
+            }
+            m = 0
+            for (; m < listSummary.length; m++) {
+              if (listSummary[m].totalMemory && listSummary[m].availableMemory) {
+                listSummary[m].memoryUseRate = Number((listSummary[m].totalMemory - listSummary[m].availableMemory) / listSummary[m].totalMemory).toFixed(2)
+                listSummary[m].memoryUseRateUnit = '%'
               }
             }
             this.listSummary = listSummary

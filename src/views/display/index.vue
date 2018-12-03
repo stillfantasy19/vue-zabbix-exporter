@@ -83,7 +83,7 @@
       </el-table-column>
       <el-table-column width="110px" align="center" label="网络吞吐量">
         <template slot-scope="scope">
-          <span>{{scope.row.incomingTrafficAvg + scope.row.outgoingTrafficAvg}}{{scope.row.trafficUnit}}</span>
+          <span>{{scope.row.traffic}}{{scope.row.trafficUnit}}</span>
         </template>
       </el-table-column>
     </el-table>
@@ -407,8 +407,11 @@ export default {
             m = 0
             for (; m < listSummary.length; m++) {
               if (listSummary[m].totalMemory && listSummary[m].availableMemory) {
-                listSummary[m].memoryUseRate = Number((listSummary[m].totalMemory - listSummary[m].availableMemory) / listSummary[m].totalMemory).toFixed(2)
+                listSummary[m].memoryUseRate = Number((listSummary[m].totalMemory - listSummary[m].availableMemory) * 100 / listSummary[m].totalMemory).toFixed(2)
                 listSummary[m].memoryUseRateUnit = '%'
+              }
+              if (listSummary[m].incomingTrafficAvg && listSummary[m].outgoingTrafficAvg) {
+                listSummary[m].traffic = Number(listSummary[m].incomingTrafficAvg + listSummary[m].outgoingTrafficAvg).toFixed(2)
               }
             }
             this.listSummary = listSummary
@@ -423,8 +426,8 @@ export default {
     handleDownload () {
       this.downloadLoading = true
       import('@/vendor/Export2Excel').then(excel => {
-        const tHeader = ['主机名', 'CPU使用率', '内存使用率', '磁盘iowait', '网络吞吐量', '网络吞吐量Incomming', '网络吞吐量Outgoing']
-        const filterVal = ['hostIp', 'cpuUseRate', 'memoryUseRate', 'ioWaitRate', 'traffic', 'incomingTrafficAvg', 'outgoingTrafficAvg']
+        const tHeader = ['主机名', 'CPU使用率', '内存使用率', '磁盘iowait', '网络吞吐量']
+        const filterVal = ['hostIp', 'cpuUseRate', 'memoryUseRate', 'ioWaitRate', 'traffic']
         const data = this.formatJson(filterVal, this.listSummary)
         excel.export_json_to_excel({
           header: tHeader,
@@ -439,11 +442,8 @@ export default {
         if (j.endsWith('Rate') && v[j]) {
           return v[j] + v.unit
         }
-        if (j.endsWith('TrafficAvg') && v[j]) {
-          return v[j] + v.trafficUnit
-        }
         if (j === 'traffic') {
-          return (v.incomingTrafficAvg + v.outgoingTrafficAvg) + v.trafficUnit
+          return v[j] + v.trafficUnit
         }
         if (!v[j]) {
           return ''

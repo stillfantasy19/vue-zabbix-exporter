@@ -45,17 +45,20 @@
       </el-table-column>
       <el-table-column width="110px" align="center" label="Min">
         <template slot-scope="scope">
-          <span>{{scope.row.min}}{{scope.row.unit}}</span>
+          <span v-if="scope.row.showMin">{{scope.row.showMin}}</span>
+          <span v-if="!scope.row.showMin">{{scope.row.min}}{{scope.row.unit}}</span>
         </template>
       </el-table-column>
       <el-table-column width="110px" align="center" label="Avg">
         <template slot-scope="scope">
-          <span>{{scope.row.avg}}{{scope.row.unit}}</span>
+          <span v-if="scope.row.showAvg">{{scope.row.showAvg}}</span>
+          <span v-if="!scope.row.showAvg">{{scope.row.avg}}{{scope.row.unit}}</span>
         </template>
       </el-table-column>
       <el-table-column width="110px" align="center" label="Max">
         <template slot-scope="scope">
-          <span>{{scope.row.max}}{{scope.row.unit}}</span>
+          <span v-if="scope.row.showMax">{{scope.row.showMax}}</span>
+          <span v-if="!scope.row.showMax">{{scope.row.max}}{{scope.row.unit}}</span>
         </template>
       </el-table-column>
     </el-table>
@@ -362,16 +365,23 @@ export default {
                 networkTraficList[m].max = Number(Number(networkTraficList[m].max) / (1024*1024*1024)).toFixed(networkTraficList[m].digits)
                 networkTraficList[m].min = Number(Number(networkTraficList[m].min) / (1024*1024*1024)).toFixed(networkTraficList[m].digits)
                 networkTraficList[m].avg = Number(Number(networkTraficList[m].avg) / (1024*1024*1024)).toFixed(networkTraficList[m].digits)
-              } else if (Number(networkTraficList[m].max) / 1000000 > 1) {
-                networkTraficList[m].unit = 'Mbps' // 设置数据单位
-                networkTraficList[m].max = Number(Number(networkTraficList[m].max) / 1000000).toFixed(networkTraficList[m].digits)
-                networkTraficList[m].min = Number(Number(networkTraficList[m].min) / 1000000).toFixed(networkTraficList[m].digits)
-                networkTraficList[m].avg = Number(Number(networkTraficList[m].avg) / 1000000).toFixed(networkTraficList[m].digits)
-              } else if (Number(networkTraficList[m].max) / 1000 > 1) {
-                networkTraficList[m].unit = 'Kbps' // 设置数据单位
-                networkTraficList[m].max = Number(Number(networkTraficList[m].max) / 1000).toFixed(networkTraficList[m].digits)
-                networkTraficList[m].min = Number(Number(networkTraficList[m].min) / 1000).toFixed(networkTraficList[m].digits)
-                networkTraficList[m].avg = Number(Number(networkTraficList[m].avg) / 1000).toFixed(networkTraficList[m].digits)
+              }
+              else {
+                if (Number(networkTraficList[m].max) / 1000000 > 1) {
+                  networkTraficList[m].showMax = Number(Number(networkTraficList[m].max) / 1000000).toFixed(networkTraficList[m].digits) + 'Mbps'
+                } else if (Number(networkTraficList[m].max) / 1000 > 1) {
+                  networkTraficList[m].showMax = Number(Number(networkTraficList[m].max) / 1000).toFixed(networkTraficList[m].digits) + 'Kbps'
+                }
+                if (Number(networkTraficList[m].avg) / 1000000 > 1) {
+                  networkTraficList[m].showAvg = Number(Number(networkTraficList[m].avg) / 1000000).toFixed(networkTraficList[m].digits) + 'Mbps'
+                } else if (Number(networkTraficList[m].avg) / 1000 > 1) {
+                  networkTraficList[m].showAvg = Number(Number(networkTraficList[m].avg) / 1000).toFixed(networkTraficList[m].digits) + 'Kbps'
+                }
+                if (Number(networkTraficList[m].min) / 1000000 > 1) {
+                  networkTraficList[m].showMin = Number(Number(networkTraficList[m].avg) / 1000000).toFixed(networkTraficList[m].digits) + 'Mbps'
+                } else if (Number(networkTraficList[m].min) / 1000 > 1) {
+                  networkTraficList[m].showMin = Number(Number(networkTraficList[m].avg) / 1000).toFixed(networkTraficList[m].digits) + 'Kbps'
+                }
               }
               this.list.push(networkTraficList[m])
             }
@@ -384,6 +394,7 @@ export default {
                   networkTraficList[i].name === 'Incoming network traffic on eth0' ||
                   networkTraficList[i].name === 'Incoming network traffic on $1' ||
                   networkTraficList[i].name === 'Incoming network traffic on $0') && networkTraficList[i].hostIp === listSummary[j].hostIp){
+                  listSummary[j].incomingTrafficShowAvg = networkTraficList[i].showAvg
                   listSummary[j].incomingTrafficAvg = Number(networkTraficList[i].avg)
                   listSummary[j].trafficUnit = networkTraficList[i].unit
                 }
@@ -391,6 +402,7 @@ export default {
                   networkTraficList[i].name === 'Outgoing network traffic on eth0' ||
                   networkTraficList[i].name === 'Outgoing network traffic on $1' ||
                   networkTraficList[i].name === 'Outgoing network traffic on $0') && networkTraficList[i].hostIp === listSummary[j].hostIp){
+                  listSummary[j].outgoingTrafficShowAvg = networkTraficList[i].showAvg
                   listSummary[j].outgoingTrafficAvg = Number(networkTraficList[i].avg)
                   listSummary[j].trafficUnit = networkTraficList[i].unit
                 }
@@ -404,13 +416,26 @@ export default {
                 }
               }
             }
+            console.log(listSummary)
             m = 0
             for (; m < listSummary.length; m++) {
               if (listSummary[m].totalMemory && listSummary[m].availableMemory) {
                 listSummary[m].memoryUseRate = Number((listSummary[m].totalMemory - listSummary[m].availableMemory) * 100 / listSummary[m].totalMemory).toFixed(2)
                 listSummary[m].memoryUseRateUnit = '%'
               }
-              if (listSummary[m].incomingTrafficAvg && listSummary[m].outgoingTrafficAvg) {
+              if (listSummary[m].incomingTrafficShowAvg && listSummary[m].outgoingTrafficShowAvg) {
+                if (listSummary[m].incomingTrafficShowAvg.endsWith('Kbps') || listSummary[m].outgoingTrafficShowAvg.endsWith('Kbps')) {
+                  listSummary[m].traffic = Number(Number(listSummary[m].incomingTrafficAvg/1000).toFixed(2)) + Number(Number(listSummary[m].outgoingTrafficAvg/1000).toFixed(2))
+                  listSummary[m].trafficUnit = 'Kbps'
+                  if (Number(listSummary[m].traffic) / 1000 > 1) {
+                    listSummary[m].traffic = Number(Number(listSummary[m].traffic) / 1000).toFixed(2)
+                    listSummary[m].trafficUnit = 'Mbps'
+                  }
+                } else {
+                  listSummary[m].traffic = Number(Number(listSummary[m].incomingTrafficAvg/1000000).toFixed(2)) + Number(Number(listSummary[m].outgoingTrafficAvg/1000000).toFixed(2))
+                  listSummary[m].trafficUnit = 'Mbps'
+                }
+              } else if (listSummary[m].incomingTrafficAvg && listSummary[m].outgoingTrafficAvg) {
                 listSummary[m].traffic = Number(listSummary[m].incomingTrafficAvg + listSummary[m].outgoingTrafficAvg).toFixed(2)
               }
             }
